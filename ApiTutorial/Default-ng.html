@@ -28,6 +28,7 @@
                             <th>Introduction Date</th>
                             <th>URL</th>
                             <th>Edit</th>
+                            <th>Delete</th>
                         </tr>
                         <tr ng-show="loading" id="loading">
                             <td colspan="100%"><img src="IMG/load.gif"></td>
@@ -36,7 +37,7 @@
                     <tbody>
                         <tr ng-repeat="x in products">
                             <td>{{x.ProductName}}</td>
-                            <td>{{x.IntroductionDate}}</td>
+                            <td>{{x.IntroductionDate | date:"dd/MM/yyyy"}}</td>
                             <td>{{x.Url}}</td>
                             <td>
                                 <button type='button' ng-click='productGet(x.ProductId);'
@@ -44,6 +45,9 @@
                                         data-id=' + x.ProductId + '>
                                     <span class='glyphicon glyphicon-edit' />
                                 </button>
+                            </td>
+                            <td>
+                                <button type='button' ng-click='productDelete(x.ProductId);' class='btn btn-default'><span class='glyphicon glyphicon-remove' /></button>
                             </td>
                         </tr>
                     </tbody>
@@ -91,8 +95,9 @@
                             <div class="col-xs-12">
                                 <button type="button" id="updateButton"
                                         class="btn btn-primary"
-                                        onclick="updateClick();">
-                                    Add
+                                        ng-click="updateClick();">
+                                    {{add}}
+                                    
                                 </button>
                             </div>
                         </div>
@@ -105,12 +110,16 @@
     <script>
         var app = angular.module("myApp", []);
         app.controller("myCtrl", function ($scope, $http) {
+            $scope.add = "Add";
             $scope.loading = true;
+            //$scope.product.ProductId = 0;   
             $http.get("Products.json").then(function (response) {
                 $scope.products = response.data;
                 $scope.loading = false;
             });
-            $scope.productGet = function(id){
+            $scope.productGet = function (id) {
+                $scope.add = "Update";
+
                 $http.get("Products" + id + ".json").then(function(response){
                     $scope.product = response.data;
                     $scope.product.IntroductionDate = new Date(
@@ -119,12 +128,29 @@
             };
             $scope.addClick = function () {
                 $scope.product = new Object();
+                $scope.add = "Add";
                 $scope.product.ProductId = 0;
                 //$scope.product = {}; cách 2
 
             };
+            $scope.updateClick = function () {
+                if ($scope.product.ProductId == 0) {
 
-            
+                    $scope.products.push($scope.product);
+                    $scope.addClick();
+                } else {
+                    var index = $scope.products.findIndex(item => item.ProductId == $scope.product.ProductId);
+                    $scope.products[index] = $scope.product; 
+                    $scope.addClick();
+                }
+            };
+            $scope.productDelete = function (id) {
+                //http.delete("").then(...)
+                var index = $scope.products.findIndex(item => item.ProductId == id);
+                $scope.products.splice(index, 1);
+            };
+            $scope.product = new Object();
+            $scope.product.ProductId = 0;
         });
     </script>
 </body>
