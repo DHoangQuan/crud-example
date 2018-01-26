@@ -113,7 +113,7 @@
             $scope.add = "Add";
             $scope.loading = true;
             //$scope.product.ProductId = 0;   
-            $http.get("Products.json").then(function (response) {
+            $http.get("api/Product").then(function (response) {
                 $scope.products = response.data;
                 $scope.loading = false;
             });
