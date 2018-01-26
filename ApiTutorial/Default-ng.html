@@ -135,9 +135,11 @@
             };
             $scope.updateClick = function () {
                 if ($scope.product.ProductId == 0) {
-
-                    $scope.products.push($scope.product);
-                    $scope.addClick();
+                    $http.post("api/Product", $scope.product).then(function (response) {
+                        $scope.products.push($scope.product);
+                        $scope.addClick();
+                    });
+                   
                 } else {
                     var index = $scope.products.findIndex(item => item.ProductId == $scope.product.ProductId);
                     $scope.products[index] = $scope.product; 
